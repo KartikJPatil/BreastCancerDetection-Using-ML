@@ -1,7 +1,6 @@
 // Fixing flexbox gap property missing in some Safari versions
-
 function checkFlexGap() {
-  var flex = document.createElement("div");
+  let flex = document.createElement("div");
   flex.style.display = "flex";
   flex.style.flexDirection = "column";
   flex.style.rowGap = "1px";
@@ -10,84 +9,74 @@ function checkFlexGap() {
   flex.appendChild(document.createElement("div"));
 
   document.body.appendChild(flex);
-  var isSupported = flex.scrollHeight == 1;
-  flex.parentNode.removeChild(flex);
+  let isSupported = flex.scrollHeight === 1;
+  flex.remove();
 
   if (!isSupported) {
-    document.body.classList.add("non-flexbox-gap");
+    document.documentElement.classList.add("non-flexbox-gap");
   }
 }
 checkFlexGap();
 
 // Set current year
-const yearEl = document.querySelector(".year");
-const currentYear = new Date().getFullYear();
-yearEl.textContent = currentYear;
+document.querySelector(".year").textContent = new Date().getFullYear();
 
 // Mobile navigation
 const menuBtn = document.querySelector(".btn-mobile-nav");
 const header = document.querySelector(".header");
+const navLinks = document.querySelectorAll(".main-nav-link");
 
 menuBtn.addEventListener("click", function () {
   header.classList.toggle("nav-open");
+  document.documentElement.classList.toggle("no-overflow");
+});
 
-  document.querySelector("html").classList.toggle("no-overflow");
-  document.querySelector("body").classList.toggle("no-overflow");
+// Close mobile menu when a link is clicked
+navLinks.forEach((link) => {
+  link.addEventListener("click", function () {
+    header.classList.remove("nav-open");
+    document.documentElement.classList.remove("no-overflow");
+  });
 });
 
 // Smooth scrolling
-
-const allLinks = document.querySelectorAll("a:link");
-
-allLinks.forEach(function (link) {
+document.querySelectorAll("a:link").forEach((link) => {
   link.addEventListener("click", function (e) {
     const href = link.getAttribute("href");
 
     if (href === "#") {
       e.preventDefault();
       window.scrollTo({ top: 0, behavior: "smooth" });
-      header.classList.remove("nav-open");
     } else if (href.startsWith("#")) {
       e.preventDefault();
       const sectionElement = document.querySelector(href);
-      sectionElement.scrollIntoView({ behavior: "smooth" });
-      header.classList.remove("nav-open");
+      if (sectionElement) {
+        sectionElement.scrollIntoView({ behavior: "smooth" });
+      }
     }
   });
 });
 
 // Sticky navigation
+const sectionHero = document.querySelector(".section-hero");
 
-const sectionHeroElement = document.querySelector(".section-hero");
-
-const observer = new IntersectionObserver(
-  function (enteries) {
-    const ent = enteries[0];
-    const bodyElement = document.querySelector("body");
-    if (!ent.isIntersecting) {
-      bodyElement.classList.add("sticky");
-    } else {
-      bodyElement.classList.remove("sticky");
-    }
-  },
-  {
-    root: null,
-    threshold: 0,
-    rootMargin: "-80px",
-  }
-);
-observer.observe(sectionHeroElement);
+if (sectionHero) {
+  const observer = new IntersectionObserver(
+    (entries) => {
+      document.body.classList.toggle("sticky", !entries[0].isIntersecting);
+    },
+    { root: null, threshold: 0, rootMargin: "-80px" }
+  );
+  observer.observe(sectionHero);
+}
 
 // PDF Viewer
-
 if (window.location.hostname === "pdfobject.com") {
-  let s = document.createElement("script");
-  s.setAttribute(
-    "src",
-    "https://www.googletagmanager.com/gtag/js?id=UA-1394306-6"
-  );
-  s.async = true;
-  document.head.appendChild(s);
+  const script = document.createElement("script");
+  script.src = "https://www.googletagmanager.com/gtag/js?id=UA-1394306-6";
+  script.async = true;
+  document.head.appendChild(script);
+
   window.dataLayer = window.dataLayer || [];
   function gtag() {
     dataLayer.push(arguments);
@@ -96,14 +85,69 @@ if (window.location.hostname === "pdfobject.com") {
   gtag("config", "UA-1394306-6");
 }
 
-var options = {
-  pdfOpenParams: {
-    pagemode: "thumbs",
-    navpanes: 0,
-    toolbar: 0,
-    statusbar: 0,
-    view: "FitV",
-  },
-};
+const API_BASE_URL = window.location.origin;
 
-PDFObject.embed("Report.pdf", ".viewPDF", options);
+
+document.querySelector("#upload-form").addEventListener("submit", async function (e) {
+  e.preventDefault();
+
+  if (e.submitter && e.submitter.id !== "submit-upload") {
+      return; // Ignore if it's not the upload button
+  }
+
+  const fileInput = document.querySelector("#file");
+  const formData = new FormData();
+  formData.append("file", fileInput.files[0]);
+
+  try {
+      const response = await fetch(`${API_BASE_URL}/upload`, {
+          method: "POST",
+          body: formData,
+          headers: {
+              "Authorization": "Bearer acbcdefghijklmnopqrstu"
+          }
+      });
+
+      // Check if response is an HTML page
+      const contentType = response.headers.get("content-type");
+      if (contentType && contentType.includes("text/html")) {
+          const html = await response.text();
+          document.open();
+          document.write(html);
+          document.close();
+          return;
+      }
+
+      // If response is JSON, handle as usual
+      const result = await response.json();
+      if (!response.ok) {
+          throw new Error(result.error || "Upload failed");
+      }
+
+      alert(result.pred || "File uploaded successfully!");
+
+  } catch (error) {
+      console.error("Upload failed:", error);
+      alert("Upload failed: " + error.message);
+  }
+});
+
+
+
+
+
+
+// Embed PDF with error handling
+try {
+  PDFObject.embed("Report.pdf", ".viewPDF", {
+    pdfOpenParams: {
+      pagemode: "thumbs",
+      navpanes: 0,
+      toolbar: 0,
+      statusbar: 0,
+      view: "FitV",
+    },
+  });
+} catch (error) {
+  console.error("PDF embed error:", error);
+}
