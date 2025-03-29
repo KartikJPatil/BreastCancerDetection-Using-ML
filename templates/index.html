@@ -73,7 +73,6 @@
         </div>
       </div>
     </section>
-
     <section id="examine-section" class="section-examine">
       <div class="container">
         <span class="subheading">How to self-examine?</span>
@@ -241,144 +240,20 @@
       <div class="container">
         <div class="detection-menu">
           <h2>DETECT NOW</h2>
-          <p class="card-text">
-            Fill the form below in accordance with the GENE MARKERS obtained in your BRCA1/BRCA2 test.
-            Our AI will then predict the risk of developing breast cancer.
-          </p>
-
-<form action="{{ url_for('predict')}}" method="POST" class="gene-form">
+          
 
 
-            <div class="gene-group">
-                <label for="brca1">BRCA1</label>
-                <input type="text" id="brca1" name="brca1">
-            </div>
 
-        
-            <div class="gene-group">
-                <label for="brca2">BRCA2</label>
-                <input type="text" id="brca2" name="brca2">
-            </div>
+      <!-- File Upload Form -->
+      
+      <p class="card-text">Upload a medical report, and our AI will extract necessary data automatically.</p>
 
-        
-            <div class="gene-group">
-                <label for="PLAB2">PLAB2</label>
-                <input type="text" id="PLAB2" name="PLAB2">
-            </div>
+      <form id="upload-form" enctype="multipart/form-data">
+        <input type="file" name="file" id="file" accept=".pdf,.txt,.csv,.docx" required>
+        <button type="submit" class="upload-btn"id="submit-upload">Upload & Process</button>
+    </form>
 
-        
-            <div class="gene-group">
-                <label for="CHEK2">CHEK2</label>
-                <input type="text" id="CHEK2" name="CHEK2">
-            </div>
-
-        
-            <div class="gene-group">
-                <label for="CDH1">CDH1</label>
-                <input type="text" id="CDH1" name="CDH1">
-            </div>
-
-        
-            <div class="gene-group">
-                <label for="PTEN">PTEN</label>
-                <input type="text" id="PTEN" name="PTEN">
-            </div>
-
-        
-            <div class="gene-group">
-                <label for="STK11">STK11</label>
-                <input type="text" id="STK11" name="STK11">
-            </div>
-
-        
-            <div class="gene-group">
-                <label for="TP53">TP53</label>
-                <input type="text" id="TP53" name="TP53">
-            </div>
-
-        
-            <div class="gene-group">
-                <label for="ATM">ATM</label>
-                <input type="text" id="ATM" name="ATM">
-            </div>
-
-        
-            <div class="gene-group">
-                <label for="BARD1">BARD1</label>
-                <input type="text" id="BARD1" name="BARD1">
-            </div>
-
-        
-            <div class="gene-group">
-                <label for="BRIP1">BRIP1</label>
-                <input type="text" id="BRIP1" name="BRIP1">
-            </div>
-
-        
-            <div class="gene-group">
-                <label for="CASP8">CASP8</label>
-                <input type="text" id="CASP8" name="CASP8">
-            </div>
-
-        
-            <div class="gene-group">
-                <label for="CTLA4">CTLA4</label>
-                <input type="text" id="CTLA4" name="CTLA4">
-            </div>
-
-        
-            <div class="gene-group">
-                <label for="CYP19A1">CYP19A1</label>
-                <input type="text" id="CYP19A1" name="CYP19A1">
-            </div>
-
-        
-            <div class="gene-group">
-                <label for="FGFR2">FGFR2</label>
-                <input type="text" id="FGFR2" name="FGFR2">
-            </div>
-
-        
-            <div class="gene-group">
-                <label for="LSP1">LSP1</label>
-                <input type="text" id="LSP1" name="LSP1">
-            </div>
-
-        
-            <div class="gene-group">
-                <label for="MAP3K1">MAP3K1</label>
-                <input type="text" id="MAP3K1" name="MAP3K1">
-            </div>
-
-        
-            <div class="gene-group">
-                <label for="MRE11A">MRE11A</label>
-                <input type="text" id="MRE11A" name="MRE11A">
-            </div>
-
-        
-            <div class="gene-group">
-                <label for="NBN">NBN</label>
-                <input type="text" id="NBN" name="NBN">
-            </div>
-
-        
-            <div class="gene-group">
-                <label for="RAD51">RAD51</label>
-                <input type="text" id="RAD51" name="RAD51">
-            </div>
-
-        
-            <div class="gene-group">
-                <label for="TERT">TERT</label>
-                <input type="text" id="TERT" name="TERT">
-            </div>
-
-        
-            <input type="submit" value="Submit" class="submit-btn">
-
-            <p style="margin-left: 40%;color:#ff1a8c;font-size:18px; "></p>
-          </form>
+      <p style="margin-left: 40%; color:#ff1a8c; font-size:18px;"></p>
         </div>
 
       </div>
