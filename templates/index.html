@@ -16,19 +16,20 @@
   <link rel="stylesheet" href="static/css/general.css" />
   <link rel="stylesheet" href="static/css/styles.css" />
   <link rel="stylesheet" href="static/css/queries.css" />
-  <title>BioGenesis &mdash; Check your health right away!</title>
+  <title>BRCAware &mdash; Check your health right away!</title>
 </head>
 
 <body>
   <header class="header">
     <a href="#" class="header-logo">
-      <img src="static/img/biogenesis-logo.png" alt="BioGenesis Logo" class="logo" />
+      <img src="static/img/BRCAware.png" alt="BRCAware Logo" class="logo" />
     </a>
     <nav class="main-nav">
       <ul class="main-nav-list">
+        <li><a href="#hero-section">Home</a></li>
         <li><a href="#examine-section">Self-Examination</a></li>
-        <li><a href="#detection-section">AI Detection</a></li>
-        <li><a href="#donations-section" class="nav-donations">Donate</a></li>
+        <li><a href="#detection-section">AI Detection</a></li> 
+        <li><a href="#blogs-section">Blogs</a></li>
       </ul>
     </nav>
 
@@ -39,7 +40,7 @@
   </header>
 
   <main>
-    <section class="section-hero">
+    <section id="hero-section" class="section-hero">
       <div class="hero-container">
         <div class="hero-text-box">
           <h1 class="heading-primary">
@@ -47,12 +48,12 @@
           </h1>
           <p class="hero-description">
             Whether you or a loved one are worried about developing breast
-            cancer, you can use our free tool to check whether you reall have
+            cancer, you can use our free tool to check whether you really have
             a breast cancer or not! We hope you don't, but please take
             caution.
           </p>
           <a href="#detection-section" class="btn btn--full margin-right-sm">Check now</a>
-          <a href="#examine-section" class="btn btn--outline">Learn more &darr;</a>
+          <a href="#examine-section" class="btn btn--outline">Learn more</a>
         </div>
         <div class="hero-img-box">
           <picture>
@@ -65,14 +66,7 @@
       </div>
     </section>
 
-    <section class="section-featured">
-      <div class="container">
-        <span class="subheading">Data Supported By</span>
-        <div class="logos">
-          <img src="static/img/logos/kaggle.png" alt="Kaggle logo" />
-        </div>
-      </div>
-    </section>
+    
     <section id="examine-section" class="section-examine">
       <div class="container">
         <span class="subheading">How to self-examine?</span>
@@ -229,61 +223,153 @@
       </div>
     </section>
 
-
-
     <section id="detection-section" class="section-detection">
-      <div class="container">
-        <span class="subheading">Detection</span>
-        <h2 class="heading-secondary">Use AI to detect breast cancer now!</h2>
+      <div class="section-heading-container">
+          <h2 class="section-heading">All you need to know before moving forward👇 OR  Move Directly to <a href="#detection-ai-section">Take Test</a></h2>
       </div>
-
-      <div class="container">
-        <div class="detection-menu">
-          <h2>DETECT NOW</h2>
-          
-
-
-
-      <!-- File Upload Form -->
-      
-      <p class="card-text">Upload a medical report, and our AI will extract necessary data automatically.</p>
-
-      <form id="upload-form" enctype="multipart/form-data">
-        <input type="file" name="file" id="file" accept=".pdf,.txt,.csv,.docx" required>
-        <button type="submit" class="upload-btn"id="submit-upload">Upload & Process</button>
-    </form>
-
-      <p style="margin-left: 40%; color:#ff1a8c; font-size:18px;"></p>
-        </div>
-
-      </div>
-    </section>
-
-
-
-    <section id="donations-section" class="section-donations">
-      <div class="container">
-        <div class="donations">
-          <div class="donations-text-box">
-            <h2 class="heading-secondary">Your Donation Saves Lives!</h2>
-            <p class="donations-text">
-              Your donation will be a reason for treating a breast cancer patient, and please an entire family, reassure
-              people that they can feel happy and safe one more time, and that will be reflected on your whole life
-              meaning.
-            </p>
-            <a href="" target="_blank" class="btn btn--form">Donate now</a>
+      <div class="detection-content-container">
+          <div class="info-and-report">
+              <span class="comments-container">
+                  <span><strong>Heres a Sample Report of BRCA1/BRCA2 for your understanding 👉.</strong><br>
+                    <br>
+                    In order to detect risk of breast cancer, it is important to understand the genetic mutations that
+                    are present in the GENES found in BRCA1/BRCA2 Test. These mutations are inherited and can increase the risk of breast cancer.
+                    <br>
+                    <br>
+                    Patient should compulsory undergo the BRCA1/BRCA2 test if they have a family history of breast cancer.
+                    Test Report is must to detect the risk of breast cancer.
+                  </span>
+              </span>
+              <span class="viewPDF"></span>
           </div>
-          <div class="donations-img-box" role="img" aria-label="Women supporting each other"></div>
+      </div>
+      <div class="detection-ai-section" id="detection-ai-section">
+          <div class="container">
+              <h3 class="detection-subheading">Detection</h3>
+              <h2 class="detection-title">Use AI to detect breast cancer now!</h2>
+          </div>
+          <div class="container">
+              <div class="detection-menu">
+                  <h2>DETECT NOW</h2>
+                  <p class="card-text">Upload a medical report that can be in any form of pdf, text, csv, doc, or png, and our AI will extract necessary data automatically.</p>
+                  <form id="upload-form" enctype="multipart/form-data">
+                      <input type="file" name="file" id="file" accept=".pdf,.txt,.csv,.docx" required>
+                      <button type="submit" class="upload-btn" id="submit-upload">Upload & Process</button>
+                  </form>
+                  <p class="upload-message"></p>
+              </div>
+          </div>
+      </div>
+  </section>
+
+<section id="blogs-section" class="section-blogs">
+  <div class="container">
+    <!-- Blog Sections -->
+    <div class="blog-section">
+      <!-- Awareness Section -->
+      <h2 class="section-title">Cancer Awareness & Blogs</h2>
+      <div class="blog-container" id="awareness">
+      
+        <div class="blog-card" >
+          <img src="https://www.americanoncology.com/static/uploads/464782c3-93c4-48ad-bc50-b46665488d5a-1709543098675.jpg" alt="Awareness 1" />
+          <h3>Breast Cancer: Understanding, Symptoms, Prevention, and Treatment</h3>
+          <p class="author"><strong>By:</strong> 
+            Regina Hampton</p>
+          <p class="desc"> Learn about breast cancer, its symptoms, risk factors, and prevention. Understand the latest treatment options and ways to cope with a diagnosis.</p>
+          <a href="blog.html">Read More</a>
+        </div>
+
+
+        <div class="blog-card">
+          <img src="https://www.foxchase.org/sites/default/files/breast-cancer-awareness.jpg" alt="Awareness 2" />
+          <h3>Why is Breast Cancer Awareness so Important?</h3>
+          <p class="author"><strong>By:</strong> Fox Chase Cancer Center</p>
+          <p class="desc">Understanding the importance of early detection, symptoms, risk factors, and screening for breast cancer.</p>
+          <a href="#">Read More</a>
+        </div>
+
+
+        <div class="blog-card" >
+          <img src="https://www.nationalbreastcancer.org/wp-content/uploads/2025/01/Blog-Image-Boundaries-Featured-Image-1536x864.png" alt="Awareness 3" />
+          <h3>Setting Healthy Boundaries for Breast Cancer Patients</h3>
+          <p class="author"><strong>By:</strong> Jessica Baladad</p>
+          <p class="desc">Learn how to set and protect healthy boundaries during and after a breast cancer diagnosis to safeguard your mental, emotional, and physical well-being.</p>
+          <a href="#">Read More</a>
         </div>
       </div>
-    </section>
-  </main>
+      <br><br>
+
+      <!-- Research Section -->
+      <h2 class="section-title">Research</h2>
+      <div class="blog-container"  id="research">
+
+        <div class="blog-card">
+          <img src="https://www.bcrf.org/wp-content/uploads/2025/02/bcrf-breast-cancer-origins-study.png" alt="Research 1" />
+          <h3>BCRF-Supported Study Reports New Discoveries on Breast Cancer’s Origins</h3>
+          <p class="author"><strong>By:</strong> Diana Schlamadinger</p>
+          <p class="desc">A new study provides insights into early genetic changes in breast cancer, paving the way for better prevention and early detection.</p>
+          <a href="#">Read More</a>
+        </div>
+
+        <div class="blog-card">
+          <img src="https://www.shutterstock.com/image-illustration/3d-rendering-human-cell-embryonic-600nw-2221456335.jpg" alt="Research 2" />
+          <h3>Ground-breaking Discovery into the Genetic Causes of Breast Cancer</h3>
+          <p class="author"><strong>By:</strong> Breakthrough Breast Cancer</p>
+          <p class="desc">Scientists have identified 49 new genetic changes linked to breast cancer, doubling the previously known number and advancing risk prediction.</p>
+          <a href="#">Read More</a>
+        </div>
+
+        <div class="blog-card">
+          <img src="https://www.bcrf.org/wp-content/uploads/2025/02/trailblazing-women-breast-cancer-researchers.png" alt="Research 3" />
+          <h3>18 Trailblazing Women Researchers Who Changed Breast Cancer Forever</h3>
+          <p class="author"><strong>By:</strong> Elizabeth Sile</p>
+          <p class="desc">In honor of Women’s History Month, meet some BCRF-supported women researchers who have made groundbreaking contributions to breast cancer research and treatment.</p>
+          <a href="#">Read More</a>
+        </div>
+      </div>
+      <br><br>
+
+      <!-- Personal Stories Section -->
+      <h2 class="section-title">Personal Stories</h2>
+      <div class="blog-container" id="personal-stories">
+
+        <div class="blog-card">
+          <img src="https://cdn-lckhb.nitrocdn.com/fUThXuzPNBIzUASLSTsvcGQjsAJFqLKD/assets/images/optimized/rev-c674b37/www.lbbc.org/wp-content/uploads/2025/02/Shannon_Gottesman_Sepia_portrait_HERO.jpg" alt="Story 1" />
+          <h3>The Overlooked Side of Breast Cancer: Mental Health</h3>
+          <p class="author"><strong>By:</strong> Shannon Gottesman</p>
+          <p class="desc">Mental health is often ignored in breast cancer treatment, but emotional healing is just as crucial as physical recovery. Shannon Gottesman shares her personal journey and practical tips on managing anxiety, finding support, and prioritizing mental wellness.</p>
+          <a href="#">Read More</a>
+        </div>
+
+        <div class="blog-card">
+          <img src="https://www.nationalbreastcancer.org/wp-content/uploads/2025/02/Danielle-and-sister_Blog.jpg" alt="Story 2" />
+          <h3>The Power of Genetic Testing: Danielle’s Family’s Story</h3>
+          <p class="author"><strong>By:</strong> National Breast Cancer Foundation</p>
+          <p class="desc"> Danielle and her twin sister Ashley discovered their BRCA gene mutation after a family history of breast cancer. Genetic testing changed their lives and led to life-saving decisions. Read her powerful story.</p>
+          <a href="#">Read More</a>
+        </div>
+
+        <div class="blog-card">
+          <img src="https://cdn-lckhb.nitrocdn.com/fUThXuzPNBIzUASLSTsvcGQjsAJFqLKD/assets/images/optimized/rev-c674b37/www.lbbc.org/wp-content/uploads/2025/03/Woman_Mountaintop_1200x675.jpg" alt="Story 3" />
+          <h3> I Didn’t Have Cancer, But I Still Carry the Scars: A BRCA Previvor’s Story</h3>
+          <p class="author"><strong>By:</strong> Cate Hardiman  </p>
+          <p class="desc">Cate shares her journey as a BRCA2 previvor, navigating preventive surgeries, survivor’s guilt, and the emotional toll of watching her sister battle cancer.</p>
+          <a href="#">Read More</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sidebar -->
+  </div>
+</section>
+
+
 
   <footer class="footer">
-    <div class="container grid grid--footer">
+    <div class="grid grid--footer">
       <div class="logo-col">
         <a href="#" class="footer-logo">
-          <img src="static/img/biogenesis-logo.png" alt="BioGenesis Logo" class="logo" />
+          <img src="static/img/BRCAware.png" alt="BioGenesis Logo" class="logo" />
         </a>
 
         <ul class="social-links">
@@ -299,10 +385,11 @@
         </ul>
 
         <p class="copyright">
-          Copyright &copy; <span class="year">2050</span> by BioGenesis.
+          Copyright &copy; <span class="year">2050</span> by BRCAware.
           All rights reserved.
         </p>
       </div>
+
       <div class="address-col">
         <p class="footer-heading">Contact us</p>
         <address class="contacts">
