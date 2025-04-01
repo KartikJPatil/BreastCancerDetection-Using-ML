@@ -17,6 +17,7 @@
   <link rel="stylesheet" href="static/css/styles.css" />
   <link rel="stylesheet" href="static/css/queries.css" />
   <title>BRCAware &mdash; Check your health right away!</title>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.4.0/dist/confetti.browser.min.js"></script>
 </head>
 
 <body>
@@ -228,24 +229,24 @@
           <h2 class="section-heading" style="font-size: 24px; color: #333; font-weight: bold;">All you need to know before moving forward👇 OR Move Directly to <a href="#detection-ai-section" style="color: #007bff; text-decoration: none;">Take Test</a></h2>
       </div>
       <div class="detection-content-container" style="background: #fff; padding: 25px; border-radius: 12px; box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.15); line-height: 1.6; font-family: 'Arial', sans-serif;">
-    <div class="info-and-report" style="text-align: left;">
-        <span class="comments-container" style="font-size: 18px; color: #333;">
-            <strong style="font-size: 20px; color: #007bff;">Here's a Sample Report of BRCA1/BRCA2 for your understanding.</strong><br><br>
-            <span style="display: block; font-size: 17px; color: #555; font-weight: 500;">
-                In order to detect the risk of breast cancer, it is important to understand the genetic mutations that
-                are present in the genes found in the BRCA1/BRCA2 Test. These mutations are inherited and can significantly increase the risk of breast cancer.
-            </span><br>
-            <span style="display: block; font-size: 17px; color: #555; font-weight: 500;">
-                Patients with a family history of breast cancer are strongly advised to undergo the BRCA1/BRCA2 test.
-                A test report is essential for accurately assessing the risk of breast cancer.
-            </span><br>
-            <strong style="font-size: 18px; color: #007bff;">View Sample Report:</strong>
-            <iframe src="/static/uploads/generatedreport.pdf" width="100%" height="400px" style="border: 2px solid #007bff; border-radius: 8px; margin-top: 10px;"></iframe>
-            <br>
-            <a href="/static/uploads/generatedreport.pdf" target="_blank" style="display: inline-block; margin-top: 15px; padding: 12px 18px; background-color: #007bff; color: white; text-decoration: none; border-radius: 6px; font-weight: bold;">Download PDF</a>
-        </span>
-    </div>
-</div>
+          <div class="info-and-report" style="text-align: left;">
+              <span class="comments-container" style="font-size: 18px; color: #333;">
+                  <strong style="font-size: 20px; color: #007bff;">Here's a Sample Report of BRCA1/BRCA2 for your understanding.</strong><br><br>
+                  <span style="display: block; font-size: 17px; color: #555; font-weight: 500;">
+                      In order to detect the risk of breast cancer, it is important to understand the genetic mutations that
+                      are present in the genes found in the BRCA1/BRCA2 Test. These mutations are inherited and can significantly increase the risk of breast cancer.
+                  </span><br>
+                  <span style="display: block; font-size: 17px; color: #555; font-weight: 500;">
+                      Patients with a family history of breast cancer are strongly advised to undergo the BRCA1/BRCA2 test.
+                      A test report is essential for accurately assessing the risk of breast cancer.
+                  </span><br>
+                  <strong style="font-size: 18px; color: #007bff;">View Sample Report:</strong>
+                  <iframe src="/static/uploads/generatedreport.pdf" width="100%" height="400px" style="border: 2px solid #007bff; border-radius: 8px; margin-top: 10px;"></iframe>
+                  <br>
+                  <a href="/static/uploads/generatedreport.pdf" target="_blank" style="display: inline-block; margin-top: 15px; padding: 12px 18px; background-color: #007bff; color: white; text-decoration: none; border-radius: 6px; font-weight: bold;">Download PDF</a>
+              </span>
+          </div>
+      </div>
       <div class="detection-ai-section" id="detection-ai-section" style="margin-top: 30px; padding: 30px; background: #fff; border-radius: 10px; box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);">
           <div class="container">
               <h3 class="detection-subheading" style="font-size: 22px; color: #555;">Detection</h3>
@@ -256,12 +257,56 @@
                   <h2 style="font-size: 22px; color: #333;">DETECT NOW</h2>
                   <p class="card-text" style="font-size: 16px; color: #444;">Upload a medical report that can be in any form of PDF, text, CSV, DOC, or PNG, and our AI will extract necessary data automatically.</p>
                   <form id="upload-form" enctype="multipart/form-data" style="margin-top: 10px;">
-                      <input type="file" name="file" id="file" accept=".pdf,.txt,.csv,.docx" required style="padding: 10px; border: 1px solid #ccc; border-radius: 5px;">
+                      <input type="file" name="file" id="file" accept=".pdf,.txt,.csv,.docx,.png" required style="padding: 10px; border: 1px solid #ccc; border-radius: 5px;">
                       <button type="submit" class="upload-btn" id="submit-upload" style="margin-top: 10px; padding: 10px 15px; background-color: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer;">Upload & Process</button>
                   </form>
                   <p class="upload-message" style="color: #28a745; font-size: 14px; margin-top: 10px;"></p>
               </div>
           </div>
+      </div>
+
+      <!-- Results section - initially hidden -->
+      <div id="result" class="container mt-4" style="display: none;font-size: 16px;">
+          <h2 class="text-center">🩺 Breast Cancer Prediction Result</h2>
+          <br>
+
+          <!-- Prediction Result -->
+          <div id="predictionResult" class="result-box">
+              <p>Loading result...</p>
+          </div>
+<br>
+          <!-- Next Steps -->
+          <div class="section-box">
+              <h4>📌 Next Steps</h4><br>
+              <a href="https://www.google.co.in/maps/search/breast+cancer+clinics+near+me" class="btn btn-warning btn-custom" target="_blank">📅 Find Doctors Nearby</a>
+          </div>
+
+          <!-- Awareness & Trusted Resources -->
+          <div class="section-box">
+              <h4>📚 Awareness & Resources</h4><br>
+              <p>Stay informed with trusted research and survivor stories.</p><br>
+              <a href="#blogs-section" class="btn btn-primary btn-custom">🔍 Visit Our Blog</a>
+          </div>
+
+          <!-- FAQ Section -->
+          <div class="section-box">
+              <h4>❓ Frequently Asked Questions</h4>
+              <details>
+                  <summary>🔹 What does "Low Risk" mean?</summary>
+                  <p>Your report does not show major risk factors. However, regular check-ups are recommended.</p>
+              </details>
+              <details>
+                  <summary>🔹 What if my result is "High Risk"?</summary>
+                  <p>A high-risk result means you should consult a doctor for further screening.</p>
+              </details>
+              <details>
+                  <summary>🔹 How accurate is this prediction?</summary>
+                  <p>This model provides an estimation based on genomic data. Always consult a medical professional.</p>
+              </details>
+          </div>
+
+          <!-- Motivational Message -->
+          <p class="footer-text">💖 "Your health is your strength. Stay informed, stay strong!"</p>
       </div>
   </section>
   

@@ -117,10 +117,12 @@ def upload_file():
         risk_score = round(probability[0], 2)  # Round to 2 decimal places
 
         print(risk_score)
-        return render_template(
-            'risky.html' if output == 1 else 'norisk.html',
-            pred='⚠ High Risk: Malignant Detected' if output == 1 else '✅ Low Risk: No Cancer Detected'
-        )
+        return jsonify({
+        "success": True,
+        "pred": "⚠ High Risk: Malignant Detected" if output == 1 else "✅ Low Risk: No Cancer Detected",
+        "risk_score": risk_score,
+        "output": output
+    })
         
 
     except Exception as e:

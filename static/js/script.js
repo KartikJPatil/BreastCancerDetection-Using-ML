@@ -87,47 +87,113 @@ if (window.location.hostname === "pdfobject.com") {
 
 const API_BASE_URL = window.location.origin;
 
-document.querySelector("#upload-form").addEventListener("submit", async function (e) {
-  e.preventDefault();
+document.addEventListener("DOMContentLoaded", function() {
+  // Define API base URL - adjust as needed for your environment
+// Empty string for same domain, or specify full URL if different
 
-  if (e.submitter && e.submitter.id !== "submit-upload") {
-    return; // Ignore if it's not the upload button
+  // Hide the result div initially
+  const resultDiv = document.querySelector("#result");
+  if (resultDiv) {
+    resultDiv.style.display = "none";
   }
 
-  const fileInput = document.querySelector("#file");
-  const formData = new FormData();
-  formData.append("file", fileInput.files[0]);
+  // Add submit event listener to the form
+  const uploadForm = document.querySelector("#upload-form");
+  if (uploadForm) {
+    uploadForm.addEventListener("submit", async function(e) {
+      e.preventDefault();
 
-  try {
-    const response = await fetch(`${API_BASE_URL}/upload`, {
-      method: "POST",
-      body: formData,
-      headers: {
-        "Authorization": "Bearer acbcdefghijklmnopqrstu"
+      if (e.submitter && e.submitter.id !== "submit-upload") {
+        return; // Ignore if it's not the upload button
+      }
+
+      const fileInput = document.querySelector("#file");
+      const formData = new FormData();
+      
+      // Check if file is selected
+      if (fileInput.files.length === 0) {
+        alert("Please select a file to upload");
+        return;
+      }
+      
+      formData.append("file", fileInput.files[0]);
+
+      try {
+        // Show loading state
+        const uploadMessage = document.querySelector(".upload-message");
+        if (uploadMessage) {
+          uploadMessage.textContent = "Processing your file...";
+          uploadMessage.style.color = "#28a745"; // Reset to success color
+        }
+        
+        const response = await fetch(`${API_BASE_URL}/upload`, {
+          method: "POST",
+          body: formData,
+          headers: {
+            "Authorization": "Bearer acbcdefghijklmnopqrstu"
+          }
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.error || "Upload failed");
+        }
+
+        // Parse the JSON response
+        const result = await response.json();
+
+        // Show the result div
+        if (resultDiv) {
+          resultDiv.style.display = "block";
+          
+          // Scroll to result section
+          resultDiv.scrollIntoView({ behavior: 'smooth' });
+          
+          // Update prediction result with data from backend
+          const predictionResult = document.querySelector("#predictionResult");
+          if (predictionResult) {
+            // Apply appropriate styling based on the output
+            predictionResult.className = "container mt-4";
+            predictionResult.classList.add(result.output === 1 ? "high-risk" : "low-risk");
+            
+            // Set the prediction text
+            predictionResult.innerHTML = `
+              <p style="font-size: 18px; font-weight: bold; color: ${result.output === 1 ? 'white' : 'white'}">
+                ${result.pred}
+              </p>
+              <br>
+              <p style="font-size: 18px; font-weight: bold; color:white;">Risk Score: ${result.risk_score}%</p>
+            `;
+            
+            // Add confetti effect for low risk results
+            if (result.output === 0 && typeof confetti !== 'undefined') {
+              setTimeout(() => {
+                confetti({
+                  particleCount: 100,
+                  spread: 70,
+                  origin: { y: 0.6 }
+                });
+              }, 500);
+            }
+          }
+        }
+
+        // Update upload message
+        if (uploadMessage) {
+          uploadMessage.textContent = "File processed successfully!";
+        }
+
+      } catch (error) {
+        console.error("Upload failed:", error);
+        
+        // Update upload message in case of error
+        const uploadMessage = document.querySelector(".upload-message");
+        if (uploadMessage) {
+          uploadMessage.textContent = "Error: " + error.message;
+          uploadMessage.style.color = "#dc3545";
+        }
       }
     });
-
-    // Check if response is an HTML page
-    const contentType = response.headers.get("content-type");
-    if (contentType && contentType.includes("text/html")) {
-      const html = await response.text();
-      document.open();
-      document.write(html);
-      document.close();
-      return;
-    }
-
-    // If response is JSON, handle as usual
-    const result = await response.json();
-    if (!response.ok) {
-      throw new Error(result.error || "Upload failed");
-    }
-
-    alert(result.pred || "File uploaded successfully!");
-
-  } catch (error) {
-    console.error("Upload failed:", error);
-    alert("Upload failed: " + error.message);
   }
 });
 
@@ -223,6 +289,8 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   }
 });
+
+
 
 
 /*blog script*/

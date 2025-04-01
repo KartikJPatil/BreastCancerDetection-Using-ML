@@ -368,6 +368,14 @@
   /* Make hero section visible by default */
 }
 
+.section-box {
+  padding: 15px;
+  border-radius: 10px;
+  background: #fff6f9;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.08);
+  margin-top: 20px;
+}
+
 /* Active section */
 .section-active {
   display: block;
@@ -375,6 +383,49 @@
   position: relative;
   top: 0;
   visibility: visible;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.result-box {
+  padding: 20px;
+  border-radius: 8px;
+  color: #fff;
+  font-size: 22px;
+  font-weight: bold;
+  transition: all 0.3s ease-in-out;
+}
+.low-risk {
+  background: linear-gradient(135deg, #28a745, #3db64b);
+  box-shadow: 0 0 15px rgba(40, 167, 69, 0.4);
+}
+.high-risk {
+  background: linear-gradient(135deg, #dc3545, #e5535f);
+  box-shadow: 0 0 15px rgba(220, 53, 69, 0.4);
+}
+
+.btn-custom:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+}
+
+details {
+  background: #fef3f7;
+  padding: 12px;
+  margin-top: 10px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+details summary {
+  font-weight: 600;
+  color: #d63384;
+}
+details p {
+  margin-top: 5px;
+  color: #555;
 }
 
 /* Main content spacing */
