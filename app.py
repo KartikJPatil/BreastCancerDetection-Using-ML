@@ -11,9 +11,18 @@ from dotenv import load_dotenv
 import json
 import re
 
-load_dotenv()
+dotenv_path = os.path.join(os.path.dirname(__file__), '.env')
+load_dotenv(dotenv_path)
+
+api_key = os.getenv("GENAI_API_KEY")
+if not api_key:
+    raise ValueError("❌ API Key not found. Make sure .env is set up correctly.")
+
+print("🔑 Loaded API Key:", api_key[:5] + "********") 
+
 app = Flask(__name__)
 CORS(app)  # Enable CORS for all routes
+
 UPLOAD_FOLDER = 'uploads'
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
@@ -22,18 +31,12 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 model = pickle.load(open('svm_model.pkl', 'rb'))
 scaler = pickle.load(open('scaler.pkl', 'rb'))
 
+print(f"Model Loaded: {model}")  # Check if the model loaded properly
+print(f"Scaler Loaded: {scaler}")  # Check if the scaler loaded properly
+
 # Configure Gemini API
-# Get API key from .env
-api_key = os.getenv("GENAI_API_KEY")
-
-if not api_key:
-    raise ValueError("❌ API Key not found. Make sure .env is set up correctly.")
-
-# Configure GenAI
 genai.configure(api_key=api_key)
 
-
-# Define the secret token (store securely in production)
 SECRET_TOKEN = "acbcdefghijklmnopqrstu"
 
 def process_pdf_with_gemini(file_bytes):
@@ -51,32 +54,33 @@ def process_pdf_with_gemini(file_bytes):
             "List out only the numerical values under the 'OBSERVED VALUE' column in **valid JSON format**: [num1, num2, num3, ...]"
         ])
 
+        print("🔍 Raw Gemini API Response:", response.text)  # Debugging print
 
         if not response.text:
+            print("❌ No response received from Gemini API")
             return []
 
-        # Remove Markdown-style code block markers
         clean_text = re.sub(r"```json\n|\n```", "", response.text.strip())
+        print("📜 Cleaned Gemini Response:", clean_text)  # Debugging print
 
-        # Parse JSON after cleanup
         extracted_numbers = json.loads(clean_text)
 
+        print("✅ Extracted Numbers:", extracted_numbers)  # Debugging print
         return extracted_numbers
 
     except json.JSONDecodeError as e:
         print(f"❌ JSON Parsing Failed: {e}. Falling back to regex extraction.")
-        return []  # Fallback if needed
+        return []
 
     except Exception as e:
         app.logger.error(f"Error processing PDF with Gemini: {e}")
         return []
-
-
-
-
+    
+    
 @app.route('/')
 def index():
     return render_template('index.html')
+
 
 @app.route('/upload', methods=['POST'])
 def upload_file():
@@ -84,36 +88,45 @@ def upload_file():
         # Authorization check
         token = request.headers.get('Authorization')
         if token != f"Bearer {SECRET_TOKEN}":
+            print("❌ Unauthorized access attempt")
             return jsonify({'error': 'Unauthorized'}), 403
 
         int_features = []
 
-        # File upload option
+        # File upload handling
         if 'file' in request.files and request.files['file'].filename:
             file = request.files['file']
-            file_bytes = file.read()  # Read file as bytes
+            file_bytes = file.read()
 
             # Process PDF using Gemini
             int_features = process_pdf_with_gemini(file_bytes)
 
+        print("🔢 Extracted Features:", int_features)  # Debugging print
 
-        if not int_features:
-            return jsonify({'error': 'No valid numerical values extracted'}), 400
+        
 
         # Convert to NumPy array and preprocess
         final = np.array(int_features).reshape(1, -1)
+        print("📊 Input Array Shape:", final.shape)  # Debugging print
+
         final_scaled = scaler.transform(final)
 
         # Predict using SVM model
-        output = model.predict(final_scaled)[0]
+        probability = model.predict_proba(final_scaled)[:, 1] * 100  # Get probability as a percentage
+        output = 1 if probability[0] >= 50 else 0  # Threshold at 50%
+        risk_score = round(probability[0], 2)  # Round to 2 decimal places
 
+        print(risk_score)
         return render_template(
             'risky.html' if output == 1 else 'norisk.html',
             pred='⚠ High Risk: Malignant Detected' if output == 1 else '✅ Low Risk: No Cancer Detected'
         )
+        
 
     except Exception as e:
+        print(f"❌ Error: {e}")
         return jsonify({'error': str(e)})
+
 
 @app.route('/upload_report', methods=['POST'])
 def upload_report():

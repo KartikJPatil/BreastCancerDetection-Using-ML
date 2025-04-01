@@ -1,53 +1,38 @@
+import pickle
+import numpy as np
 import pandas as pd
 from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
+from sklearn.svm import SVC
+from sklearn.metrics import accuracy_score
 
-# Load dataset
-df = pd.read_csv('upscale.csv')
+# Load dataset (Replace 'data.csv' with your actual dataset)
+df = pd.read_csv('external_test.csv')  # Ensure this file is present in your project directory
 
-# Drop unwanted column
-if "Hybridization REF" in df.columns:
-    df = df.drop(columns="Hybridization REF")
+# Separate features and target
+X = df.iloc[:, :-1].values  # All columns except the last (features)
+y = df.iloc[:, -1].values   # Last column (target: 0 = No Risk, 1 = Risk)
 
-# Split into training (90%) and external test (10%)
-df_train, df_external_test = train_test_split(df, test_size=0.1, random_state=42, stratify=df.iloc[:, 21])
+# Split into training and testing sets (80% train, 20% test)
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
-# Save external test set
-df_external_test.to_csv('external_test.csv', index=False)
+# Feature scaling (Standardization)
+scaler = StandardScaler()
+X_train_scaled = scaler.fit_transform(X_train)
+X_test_scaled = scaler.transform(X_test)
 
-print("✅ External test set saved as 'external_test.csv'. Now run the validation code on it!")
-import pandas as pd
-import pickle
-from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, confusion_matrix
+# Train SVM model with probability enabled for risk score calculation
+svm_model = SVC(kernel='linear', probability=True, random_state=42)
+svm_model.fit(X_train_scaled, y_train)
 
-# Load the external validation dataset
-df_val = pd.read_csv('external_test.csv')  # Update with the actual filename
+# Predict on test data and calculate accuracy
+y_pred = svm_model.predict(X_test_scaled)
+accuracy = accuracy_score(y_test, y_pred)
 
-# Drop unwanted column if it exists
-if "Hybridization REF" in df_val.columns:
-    df_val = df_val.drop(columns="Hybridization REF")
+# Save trained model and scaler
+pickle.dump(svm_model, open('svm_model.pkl', 'wb'))
+pickle.dump(scaler, open('scaler.pkl', 'wb'))
 
-# Separate features and labels
-X_val = df_val.iloc[:, 0:21].values  # Adjust if your dataset has a different structure
-y_val = df_val.iloc[:, 21].values
-
-# Load the trained model & scaler
-svm_model = pickle.load(open('svm_model.pkl', 'rb'))
-scaler = pickle.load(open('scaler.pkl', 'rb'))
-
-# Standardize the validation dataset
-X_val_scaled = scaler.transform(X_val)
-
-# Predict using the loaded model
-y_pred_val = svm_model.predict(X_val_scaled)
-
-# Evaluate performance
-print("\n🔹 External Validation Results 🔹")
-print(f"Accuracy: {accuracy_score(y_val, y_pred_val):.4f}")
-print(f"Precision: {precision_score(y_val, y_pred_val, average='weighted'):.4f}")
-print(f"Recall: {recall_score(y_val, y_pred_val, average='weighted'):.4f}")
-print(f"F1 Score: {f1_score(y_val, y_pred_val, average='weighted'):.4f}")
-
-# Confusion Matrix
-print("\nConfusion Matrix:")
-print(confusion_matrix(y_val, y_pred_val))
-
+# Print results
+print(f"✅ Model training complete. Accuracy: {accuracy * 100:.2f}%")
+print("✅ SVM model and scaler saved successfully.")
