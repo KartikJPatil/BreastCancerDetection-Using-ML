@@ -329,11 +329,6 @@ script.src = "https://cdnjs.cloudflare.com/ajax/libs/showdown/1.9.1/showdown.min
 script.onload = fetchBlog;
 document.body.appendChild(script);
 
-const blogCategories = {
-  "awareness": ["md/a1.md", "md/a2.md", "md/a3.md"],
-  "research": ["md/r1.md", "md/r2.md", "md/r3.md"],
-  "personal-stories": ["md/ps1.md", "md/ps2.md", "md/ps3.md"]
-};
 
 // Blog Titles Mapping
 const blogTitles = {
@@ -348,40 +343,4 @@ const blogTitles = {
   "ps3": "I Didn’t Have Cancer, But I Still Carry the Scars: A BRCA Previvor’s Story"
 };
 
-async function loadBlogs() {
-  Object.keys(blogCategories).forEach(category => {
-    let container = document.getElementById(category);
 
-    if (!container) {
-      console.error("Container not found for", category);
-      return;
-    }
-
-    // Get all existing blog cards in that category
-    let cards = container.querySelectorAll(".blog-card");
-
-    // Check if the number of cards matches the number of blogs
-    if (cards.length !== blogCategories[category].length) {
-      console.error(`Mismatch: Found ${cards.length} cards but expected ${blogCategories[category].length}`);
-      return;
-    }
-
-    // Update each card instead of creating new ones
-    blogCategories[category].forEach((file, index) => {
-      let card = cards[index];
-      let fileName = file.split("/").pop().replace(".md", ""); // Extract filename without extension
-
-      // Set correct title from blogTitles mapping
-      if (blogTitles[fileName]) {
-        card.querySelector("h3").textContent = blogTitles[fileName];
-      } else {
-        console.warn(`Title not found for ${fileName}`);
-      }
-
-      // Update blog link
-      card.querySelector("a").href = `blog.html?file=${file}`;
-    });
-  });
-}
-
-document.addEventListener("DOMContentLoaded", loadBlogs);
