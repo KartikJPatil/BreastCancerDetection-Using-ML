@@ -19,8 +19,26 @@ checkFlexGap();
 document.querySelector(".year").textContent = new Date().getFullYear();
 
 // Mobile navigation
-const menuBtn = document.querySelector(".btn-mobile-nav");
+
 const header = document.querySelector(".header");
+const menuBtn = document.querySelector('.btn-mobile-nav');
+const navList = document.querySelector('.main-nav-list');
+const menuIcon = document.querySelector('ion-icon[name="menu-outline"]');
+const closeIcon = document.querySelector('ion-icon[name="close-outline"]');
+
+menuBtn.addEventListener('click', function () {
+  navList.classList.toggle('active');
+  
+  // Toggle icons
+  if (navList.classList.contains('active')) {
+    menuIcon.style.display = 'none';
+    closeIcon.style.display = 'block';
+  } else {
+    menuIcon.style.display = 'block';
+    closeIcon.style.display = 'none';
+  }
+});
+
 
 menuBtn.addEventListener("click", function () {
   header.classList.toggle("nav-open");
@@ -153,3 +171,6 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 });
+
+
+
