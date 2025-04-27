@@ -37,8 +37,10 @@
                 <h2 style="font-size: 22px; color: #333;">DETECT NOW</h2>
                 <p class="card-text" style="font-size: 16px; color: #444;">Upload a medical report that can be in any form of PDF, text, CSV, DOC, or PNG, and our AI will extract necessary data automatically.</p>
                 <form id="upload-form" enctype="multipart/form-data" style="margin-top: 10px;">
-                    <input type="file" name="file" id="file" accept=".pdf,.txt,.csv,.docx,.png" required style="padding: 10px; border: 1px solid #ccc; border-radius: 5px;">
-                    <button type="submit" class="upload-btn" id="submit-upload" style="margin-top: 10px; padding: 10px 15px; background-color: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer;">Upload & Process</button>
+                    <label for="file" class="custom-file-upload">📁 Choose Your File</label>
+                    <input type="file" name="file" id="file" accept=".pdf,.txt,.csv,.docx,.png" required>
+                    <button type="submit" class="upload-btn" id="submit-upload">Upload & Process</button>
+
                 </form>
                 <p class="upload-message" style="color: #28a745; font-size: 14px; margin-top: 10px;"></p>
             </div>

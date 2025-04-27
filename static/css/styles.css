@@ -225,37 +225,6 @@ main {
   max-width: 75%;
 }
 
-/* Featured In Section */
-.section-featured {
-  padding: 4.8rem 0;
-}
-
-.section-featured .subheading {
-  font-size: 1.4rem;
-  text-align: center;
-  margin-bottom: 2.4rem;
-  color: #888;
-  font-weight: 700;
-}
-
-.logos {
-  display: flex;
-  align-items: center;
-  justify-content: space-around;
-}
-
-.logos img {
-  height: 6.8rem;
-  filter: brightness(0);
-  opacity: 50%;
-  transition: all 0.3s;
-}
-
-.logos img:hover {
-  filter: brightness(1);
-  opacity: 100%;
-}
-
 /* PDF Section */
 
 .section-detection {
@@ -329,6 +298,60 @@ main {
 }
 
 /*Detection Section*/
+/* Upload File Button - New Beautiful Style */
+#upload-form {
+  margin-top: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  align-items: center;
+}
+
+#file {
+  display: none;
+}
+
+.custom-file-upload {
+  display: inline-block;
+  padding: 1.2rem 2rem;
+  cursor: pointer;
+  background-color: #c11668;
+  color: #fff;
+  border-radius: 8px;
+  font-size: 1.6rem;
+  font-weight: 500;
+  transition: all 0.3s;
+}
+
+.custom-file-upload:hover {
+  background-color: #a20d55;
+}
+
+.upload-btn {
+  padding: 1rem 2rem;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1.6rem;
+}
+
+.upload-message {
+  color: #28a745;
+  font-size: 1.4rem;
+  margin-top: 1rem;
+}
+
+/* Mobile Responsiveness for upload section */
+@media (max-width: 768px) {
+  .custom-file-upload, .upload-btn {
+    width: 100%;
+    text-align: center;
+  }
+}
+
+
 
 .card-text {
   font-size: 20px;
