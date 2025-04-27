@@ -252,22 +252,6 @@
     padding: 0;
   }
 
-  .section-donations {
-    padding: 4.8rem 0 6.8rem 0;
-  }
-
-  .donations {
-    grid-template-columns: 1fr;
-  }
-
-  .donations-text-box {
-    padding: 3.2rem;
-  }
-
-  .donations-img-box {
-    height: 32rem;
-    grid-row: 1;
-  }
 
   .footer {
     padding: 6.4rem 0;

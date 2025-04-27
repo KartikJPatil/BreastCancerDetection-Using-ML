@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{% block title %}BRCAware{% endblock %}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+  <link rel="icon" href="{{ url_for('static', filename='img/favicon.png') }}" />
+  <link rel="apple-touch-icon" href="{{ url_for('static', filename='img/apple-touch-icon.png') }}" />
+  <link rel="manifest" href="{{ url_for('static', filename='manifest.webmanifest') }}" />
+
+  <!-- ✅ Correct linking using Flask url_for -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/general.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/queries.css') }}">
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.4.0/dist/confetti.browser.min.js"></script>
+</head>
+
+<body>
+  <header class="header">
+    <a href="#" class="header-logo">
+      <img src="static/img/BRCAware.png" alt="BRCAware Logo" class="logo" />
+    </a>
+    <nav class="main-nav">
+      <ul class="main-nav-list">
+        <li><a href="/">Home</a></li>
+        <li><a href="/self-examination">Self-Examination</a></li>
+        <li><a href="/ai_detection">AI Detection</a></li>
+        <li><a href="/blog">Blogs</a></li>
+      </ul>
+    </nav>
+
+    <button class="btn-mobile-nav">
+      <ion-icon class="icon-mobile-nav" name="menu-outline"></ion-icon>
+      <ion-icon class="icon-mobile-nav" name="close-outline"></ion-icon>
+    </button>
+  </header>
+
+
+
+    {% block content %}{% endblock %}
+
+  <footer class="footer">
+    <div class="grid grid--footer">
+      <div class="logo-col">
+        <a href="#" class="footer-logo">
+          <img src="static/img/BRCAware.png" alt="BioGenesis Logo" class="logo" />
+        </a>
+
+        <ul class="social-links">
+          <li>
+            <a class="footer-link" href="#"><ion-icon class="social-icon" name="logo-instagram"></ion-icon></a>
+          </li>
+          <li>
+            <a class="footer-link" href="#"><ion-icon class="social-icon" name="logo-facebook"></ion-icon></a>
+          </li>
+          <li>
+            <a class="footer-link" href="#"><ion-icon class="social-icon" name="logo-twitter"></ion-icon></a>
+          </li>
+        </ul>
+
+        <p class="copyright">
+          Copyright &copy; <span class="year">2050</span> by BRCAware.
+          All rights reserved.
+        </p>
+      </div>
+
+      <div class="address-col">
+        <p class="footer-heading">Contact us</p>
+        <address class="contacts">
+          <p class="address">
+            A.P.Shah Institute of Technology, Thane, Maharashtra, India
+          </p>
+        </address>
+      </div>
+    </div>
+  </footer>
+
+  <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+  <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
+  <script src="https://cdn.jsdelivr.net/gh/cferdinandi/smooth-scroll/dist/smooth-scroll.polyfills.min.js"></script>
+  <script src="https://unpkg.com/pdfobject@2.2.8/pdfobject.min.js"></script>
+
+  <script src="static/js/script.js"></script>
+</body>
+
+</html>

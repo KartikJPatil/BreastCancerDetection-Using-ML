@@ -134,5 +134,17 @@ def upload_file():
 def upload_report():
     return upload_file()
 
+@app.route('/blog')
+def blog():
+    return render_template('blogs.html')
+
+@app.route('/self-examination')
+def self_examination():
+    return render_template('self_exam.html')
+
+@app.route('/ai_detection')
+def ai_detection():
+    return render_template('ai_detection.html')
+
 if __name__ == '__main__':
     app.run(host='127.0.0.1', port=5001, debug=True)
