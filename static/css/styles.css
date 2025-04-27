@@ -288,69 +288,254 @@ main {
   margin-bottom: 2.4rem;
 }
 
+/* Improved Upload Section */
 .detection-menu {
   max-width: 600px;
   margin: auto;
-  padding: 20px;
-  border: 2px solid #ff4081;
-  border-radius: 10px;
+  padding: 3rem; /* Increased padding */
+  background: #f8f9fa;
+  border-radius: 15px; /* More rounded corners */
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1); /* Stronger shadow */
   text-align: center;
+  transition: all 0.3s ease; /* Smooth transition */
 }
 
-/*Detection Section*/
-/* Upload File Button - New Beautiful Style */
-#upload-form {
-  margin-top: 1rem;
+.detection-menu:hover {
+  transform: translateY(-5px); /* Slight lift on hover */
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15); /* Enhanced shadow on hover */
+}
+
+.detection-menu h2 {
+  font-size: 2.8rem; /* Larger heading */
+  color: #333;
+  margin-bottom: 2rem;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.05); /* Subtle text shadow */
+}
+
+.detection-menu .card-text {
+  font-size: 1.8rem;
+  color: #555;
+  margin-bottom: 3rem;
+  line-height: 1.6;
+}
+
+/* Drag and Drop Area */
+.drag-area {
+  border: 3px dashed #c11668;
+  height: 180px; /* Increased height */
+  border-radius: 15px; /* Consistent rounded corners */
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
   align-items: center;
-}
-
-#file {
-  display: none;
-}
-
-.custom-file-upload {
-  display: inline-block;
-  padding: 1.2rem 2rem;
+  justify-content: center;
+  padding: 3rem; /* Increased padding */
+  margin-bottom: 2.5rem;
+  transition: border-color 0.3s ease, background-color 0.3s ease;
+  background-color: #fef3f7;
   cursor: pointer;
-  background-color: #c11668;
-  color: #fff;
-  border-radius: 8px;
-  font-size: 1.6rem;
-  font-weight: 500;
-  transition: all 0.3s;
 }
 
-.custom-file-upload:hover {
-  background-color: #a20d55;
+.drag-area.active {
+  border-color: #ff69b4;
+  background-color: #ffe6f2;
 }
 
-.upload-btn {
-  padding: 1rem 2rem;
-  background-color: #007bff;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  font-size: 1.6rem;
+.drag-area.has-file {
+  background-color: #e6f7ff;
+  border-color: #007bff;
 }
 
-.upload-message {
-  color: #28a745;
-  font-size: 1.4rem;
-  margin-top: 1rem;
+.drag-icon {
+  font-size: 60px; /* Larger icon */
+  color: #c11668;
+  margin-bottom: 1rem;
+  animation: pulse 2s infinite; /* Subtle pulse animation */
 }
 
-/* Mobile Responsiveness for upload section */
-@media (max-width: 768px) {
-  .custom-file-upload, .upload-btn {
-    width: 100%;
-    text-align: center;
+@keyframes pulse {
+  0% {
+      transform: scale(1);
+  }
+  50% {
+      transform: scale(1.05);
+  }
+  100% {
+      transform: scale(1);
   }
 }
 
+.drag-text {
+  font-size: 2rem;
+  font-weight: 500;
+  color: #333;
+  margin: 1.5rem 0;
+}
+
+.drag-hint {
+  font-size: 1.6rem;
+  color: #777;
+}
+
+/* File Info Display */
+.file-info {
+  display: none; /* Initially hidden */
+  margin: 2rem 0;
+  border-radius: 10px;
+  overflow: hidden;
+  background-color: #f0f8ff; /* Light blue background */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.selected-file {
+  display: flex;
+  align-items: center;
+  padding: 1.5rem;
+  background-color: #e6f3ff;
+  border-radius: 10px;
+  border-left: 5px solid #007bff;
+}
+
+.file-icon {
+  font-size: 2.5rem;
+  margin-right: 1.5rem;
+  color: #007bff;
+}
+
+.file-name {
+  flex: 1;
+  font-size: 1.6rem;
+  font-weight: 600;
+  color: #333;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-right: 1.5rem;
+}
+
+.file-size {
+  font-size: 1.4rem;
+  color: #666;
+  margin-right: 1.5rem;
+}
+
+.remove-file {
+  background: none;
+  border: none;
+  color: #ff4081;
+  cursor: pointer;
+  font-size: 2.2rem;
+  transition: all 0.2s;
+}
+
+.remove-file:hover {
+  color: #c11668;
+  transform: scale(1.2);
+}
+
+/* Custom File Upload Button */
+.custom-file-upload {
+  display: inline-block;
+  padding: 1.5rem 3rem;
+  background-color: #007bff;
+  color: white;
+  cursor: pointer;
+  border-radius: 10px;
+  font-size: 1.8rem;
+  font-weight: 600;
+  margin-right: 1.5rem;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.custom-file-upload:hover {
+  background-color: #0056b3;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+#file {
+  display: none; /* Hide the default file input */
+}
+
+/* Upload Button */
+.upload-btn {
+  padding: 1.5rem 3rem;
+  background-color: #28a745;
+  color: white;
+  border: none;
+  cursor: pointer;
+  border-radius: 10px;
+  font-size: 1.8rem;
+  font-weight: 600;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.upload-btn:hover {
+  background-color: #218838;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Upload Message */
+.upload-message {
+  color: #28a745;
+  font-size: 1.6rem;
+  margin-top: 1.5rem;
+  font-weight: 500;
+  text-align: center;
+  animation: fadeIn 0.5s ease-in-out; /* Fade-in animation */
+}
+
+@keyframes fadeIn {
+  from {
+      opacity: 0;
+      transform: translateY(10px);
+  }
+  to {
+      opacity: 1;
+      transform: translateY(0);
+  }
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+  .detection-menu {
+      padding: 2rem;
+  }
+
+  .detection-menu h2 {
+      font-size: 2.4rem;
+  }
+
+  .detection-menu .card-text {
+      font-size: 1.6rem;
+  }
+
+  .drag-area {
+      height: 150px;
+      padding: 2rem;
+  }
+
+  .drag-icon {
+      font-size: 50px;
+  }
+
+  .drag-text {
+      font-size: 1.8rem;
+  }
+
+  .custom-file-upload,
+  .upload-btn {
+      padding: 1.2rem 2.4rem;
+      font-size: 1.6rem;
+  }
+
+  .file-name {
+      max-width: 150px;
+  }
+}
 
 
 .card-text {
