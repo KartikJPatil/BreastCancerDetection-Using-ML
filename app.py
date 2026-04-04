@@ -86,7 +86,7 @@ def process_pdf_with_gemini(file_bytes):
 # ================= ROUTES =================
 @app.route('/')
 def index():
-    return "Server Running Successfully 🚀"
+    return render_template('index.html')
 
 @app.route('/upload', methods=['POST'])
 def upload_file():
