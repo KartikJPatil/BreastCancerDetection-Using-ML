@@ -41,7 +41,7 @@ SECRET_TOKEN = "acbcdefghijklmnopqrstu"
 
 def process_pdf_with_gemini(file_bytes):
     """Processes a PDF file with Gemini to extract numerical values under 'OBSERVED VALUE'."""
-    model = genai.GenerativeModel("gemini-1.5-flash")
+    model = genai.GenerativeModel("gemini-1.5-pro")
 
     try:
         pdf_data = {
