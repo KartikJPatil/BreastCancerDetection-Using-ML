@@ -16,12 +16,12 @@ load_dotenv(dotenv_path)
 
 api_key = os.getenv("GENAI_API_KEY")
 if not api_key:
-    raise ValueError("❌ API Key not found. Make sure .env is set up correctly.")
+    raise ValueError("API Key not found. Make sure .env is set up correctly.")
 
-print("🔑 Loaded API Key:", api_key[:5] + "********") 
+print("Loaded API Key:", api_key[:5] + "********") 
 
 app = Flask(__name__)
-CORS(app)  # Enable CORS for all routes
+CORS(app)
 
 UPLOAD_FOLDER = 'uploads'
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
@@ -31,8 +31,8 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 model = pickle.load(open('svm_model.pkl', 'rb'))
 scaler = pickle.load(open('scaler.pkl', 'rb'))
 
-print(f"✅ Model Loaded: {type(model)}")
-print(f"✅ Scaler Loaded: {type(scaler)}")
+print(f"Model Loaded: {type(model)}")
+print(f"Scaler Loaded: {type(scaler)}")
 
 # Configure Gemini API
 genai.configure(api_key=api_key)
@@ -49,7 +49,6 @@ def process_pdf_with_gemini(file_bytes):
             "data": file_bytes
         }
 
-        # Updated prompt for better extraction
         prompt = """
         Extract ONLY the numerical values from the 'OBSERVED VALUE' column in this medical report.
         Return them as a simple JSON array of numbers in this exact format: [1, 2, 3, 4, 5, 6, 7, 8, 9]
@@ -71,13 +70,12 @@ def process_pdf_with_gemini(file_bytes):
 
         response = model.generate_content([pdf_data, prompt])
 
-        print("🔍 Raw Gemini API Response:", response.text)
+        print("Raw Gemini API Response:", response.text)
 
         if not response.text:
-            print("❌ No response received from Gemini API")
+            print("No response received from Gemini API")
             return []
 
-        # Clean the response
         clean_text = response.text.strip()
         
         # Remove markdown code blocks if present
@@ -85,7 +83,7 @@ def process_pdf_with_gemini(file_bytes):
         clean_text = re.sub(r"```\s*", "", clean_text)
         clean_text = clean_text.strip()
         
-        print("📜 Cleaned Gemini Response:", clean_text)
+        print("Cleaned Gemini Response:", clean_text)
 
         # Try to parse JSON
         try:
@@ -93,28 +91,27 @@ def process_pdf_with_gemini(file_bytes):
             
             # Validate it's a list of numbers
             if isinstance(extracted_numbers, list) and len(extracted_numbers) == 9:
-                # Ensure all values are numeric
                 extracted_numbers = [float(x) for x in extracted_numbers]
-                print(f"✅ Extracted {len(extracted_numbers)} Numbers:", extracted_numbers)
+                print(f"Extracted {len(extracted_numbers)} Numbers:", extracted_numbers)
                 return extracted_numbers
             else:
-                print(f"⚠️ Expected 9 values, got {len(extracted_numbers) if isinstance(extracted_numbers, list) else 'invalid format'}")
+                print(f"Expected 9 values, got {len(extracted_numbers) if isinstance(extracted_numbers, list) else 'invalid format'}")
                 return []
                 
         except (json.JSONDecodeError, ValueError) as e:
-            print(f"❌ JSON Parsing Failed: {e}")
+            print(f"JSON Parsing Failed: {e}")
             # Fallback: Try to extract numbers using regex
             numbers = re.findall(r'\d+\.?\d*', clean_text)
             if len(numbers) == 9:
                 extracted_numbers = [float(x) for x in numbers]
-                print(f"✅ Regex Extracted {len(extracted_numbers)} Numbers:", extracted_numbers)
+                print(f"Regex Extracted {len(extracted_numbers)} Numbers:", extracted_numbers)
                 return extracted_numbers
             else:
-                print(f"⚠️ Regex found {len(numbers)} numbers, expected 9")
+                print(f"Regex found {len(numbers)} numbers, expected 9")
                 return []
 
     except Exception as e:
-        app.logger.error(f"❌ Error processing PDF with Gemini: {e}")
+        app.logger.error(f"Error processing PDF with Gemini: {e}")
         import traceback
         traceback.print_exc()
         return []
@@ -141,13 +138,13 @@ def self_examination():
 def upload_file():
     try:
         print("\n" + "="*60)
-        print("🔍 UPLOAD REQUEST RECEIVED")
+        print("UPLOAD REQUEST RECEIVED")
         print("="*60)
         
         # Authorization check
         token = request.headers.get('Authorization')
         if token != f"Bearer {SECRET_TOKEN}":
-            print("❌ Unauthorized access attempt")
+            print("Unauthorized access attempt")
             return jsonify({
                 'success': False,
                 'error': 'Unauthorized access'
@@ -157,7 +154,7 @@ def upload_file():
 
         # File upload handling
         if 'file' not in request.files:
-            print("❌ No file in request")
+            print("No file in request")
             return jsonify({
                 'success': False,
                 'error': 'No file uploaded'
@@ -166,27 +163,27 @@ def upload_file():
         file = request.files['file']
         
         if file.filename == '':
-            print("❌ Empty filename")
+            print("Empty filename")
             return jsonify({
                 'success': False,
                 'error': 'No file selected'
             }), 400
         
-        print(f"📁 File received: {file.filename}")
+        print(f"File received: {file.filename}")
         
         # Read file bytes
         file_bytes = file.read()
-        print(f"📊 File size: {len(file_bytes)} bytes")
+        print(f"File size: {len(file_bytes)} bytes")
 
         # Process PDF using Gemini
-        print("🤖 Processing with Gemini AI...")
+        print("Processing with Gemini AI...")
         int_features = process_pdf_with_gemini(file_bytes)
 
-        print(f"🔢 Extracted Features: {int_features}")
+        print(f"Extracted Features: {int_features}")
 
         # Validate extracted features
         if not int_features or len(int_features) != 9:
-            print(f"❌ Invalid feature count: {len(int_features) if int_features else 0}")
+            print(f"Invalid feature count: {len(int_features) if int_features else 0}")
             return jsonify({
                 'success': False,
                 'error': f'Could not extract valid data from the file. Expected 9 features, got {len(int_features) if int_features else 0}. Please ensure the PDF contains a valid BRCA1/BRCA2 test report with all required fields.'
@@ -194,16 +191,16 @@ def upload_file():
 
         # Convert to NumPy array and preprocess
         final = np.array(int_features).reshape(1, -1)
-        print(f"📊 Input Array Shape: {final.shape}")
-        print(f"📊 Input Values: {final}")
+        print(f"Input Array Shape: {final.shape}")
+        print(f"Input Values: {final}")
 
         # Scale the features
         try:
             final_scaled = scaler.transform(final)
-            print(f"✅ Features scaled successfully")
-            print(f"📊 Scaled Values: {final_scaled}")
+            print(f"Features scaled successfully")
+            print(f"Scaled Values: {final_scaled}")
         except Exception as e:
-            print(f"❌ Scaling error: {e}")
+            print(f"Scaling error: {e}")
             return jsonify({
                 'success': False,
                 'error': f'Error processing features: {str(e)}'
@@ -216,7 +213,7 @@ def upload_file():
             risk_score = round(probability[0], 2)
 
             print(f"\n{'='*60}")
-            print(f"🎯 PREDICTION RESULTS")
+            print(f"PREDICTION RESULTS")
             print(f"{'='*60}")
             print(f"Risk Score: {risk_score}%")
             print(f"Output: {output} ({'High Risk' if output == 1 else 'Low Risk'})")
@@ -224,13 +221,13 @@ def upload_file():
 
             return jsonify({
                 "success": True,
-                "pred": "⚠ High Risk: Malignant Detected" if output == 1 else "✅ Low Risk: No Cancer Detected",
+                "pred": "High Risk: Malignant Detected" if output == 1 else "Low Risk: No Cancer Detected",
                 "risk_score": risk_score,
                 "output": output
             })
         
         except Exception as e:
-            print(f"❌ Prediction error: {e}")
+            print(f"Prediction error: {e}")
             import traceback
             traceback.print_exc()
             return jsonify({
@@ -239,7 +236,7 @@ def upload_file():
             }), 500
 
     except Exception as e:
-        print(f"\n❌ UNEXPECTED ERROR: {e}")
+        print(f"\nUNEXPECTED ERROR: {e}")
         import traceback
         traceback.print_exc()
         return jsonify({
@@ -255,245 +252,4 @@ def upload_report():
 
 if __name__ == '__main__':
     app.run(host='127.0.0.1', port=5001, debug=True)
-</artifact>
-
-Now, let me also create a **test sample report generator** so you can create a properly formatted PDF for testing:
-
-<antArtifact identifier="create-sample-report" type="application/vnd.ant.code" language="python" title="Create Sample BRCA Test Report (PDF)">
-from reportlab.lib.pagesizes import letter
-from reportlab.lib import colors
-from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
-from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer
-from reportlab.lib.units import inch
-import random
-
-def create_sample_brca_report(filename="sample_brca_report.pdf", risk_type="low"):
-    """
-    Create a sample BRCA test report PDF
-    risk_type: "low" or "high"
-    """
-    
-    # Create PDF
-    doc = SimpleDocTemplate(filename, pagesize=letter)
-    elements = []
-    
-    # Styles
-    styles = getSampleStyleSheet()
-    title_style = ParagraphStyle(
-        'CustomTitle',
-        parent=styles['Heading1'],
-        fontSize=18,
-        textColor=colors.HexColor('#0066cc'),
-        spaceAfter=30,
-        alignment=1  # Center
-    )
-    
-    # Title
-    title = Paragraph("BRCA1/BRCA2 Genetic Test Report", title_style)
-    elements.append(title)
-    elements.append(Spacer(1, 0.3*inch))
-    
-    # Patient Info
-    patient_info = [
-        ["Patient Name:", "John Doe"],
-        ["Date of Birth:", "01/15/1980"],
-        ["Test Date:", "04/01/2026"],
-        ["Report ID:", "BRCA-2026-001234"],
-    ]
-    
-    t1 = Table(patient_info, colWidths=[2*inch, 3*inch])
-    t1.setStyle(TableStyle([
-        ('FONTNAME', (0, 0), (0, -1), 'Helvetica-Bold'),
-        ('FONTSIZE', (0, 0), (-1, -1), 10),
-        ('BOTTOMPADDING', (0, 0), (-1, -1), 8),
-    ]))
-    elements.append(t1)
-    elements.append(Spacer(1, 0.4*inch))
-    
-    # Test Results Table
-    elements.append(Paragraph("<b>Test Results - Observed Values</b>", styles['Heading2']))
-    elements.append(Spacer(1, 0.2*inch))
-    
-    # Generate values based on risk type
-    if risk_type == "low":
-        # Low risk values (mostly 1-3)
-        values = [
-            random.randint(1, 3),  # Clump Thickness
-            random.randint(1, 2),  # Uniformity of Cell Size
-            random.randint(1, 2),  # Uniformity of Cell Shape
-            random.randint(1, 2),  # Marginal Adhesion
-            random.randint(1, 3),  # Single Epithelial Cell Size
-            random.randint(1, 2),  # Bare Nuclei
-            random.randint(1, 3),  # Bland Chromatin
-            random.randint(1, 2),  # Normal Nucleoli
-            random.randint(1, 1),  # Mitoses
-        ]
-    else:
-        # High risk values (mostly 5-10)
-        values = [
-            random.randint(7, 10),  # Clump Thickness
-            random.randint(6, 9),   # Uniformity of Cell Size
-            random.randint(6, 9),   # Uniformity of Cell Shape
-            random.randint(5, 8),   # Marginal Adhesion
-            random.randint(6, 9),   # Single Epithelial Cell Size
-            random.randint(7, 10),  # Bare Nuclei
-            random.randint(6, 9),   # Bland Chromatin
-            random.randint(6, 9),   # Normal Nucleoli
-            random.randint(3, 5),   # Mitoses
-        ]
-    
-    test_data = [
-        ['Test Parameter', 'OBSERVED VALUE', 'Reference Range'],
-        ['Clump Thickness', str(values[0]), '1-10'],
-        ['Uniformity of Cell Size', str(values[1]), '1-10'],
-        ['Uniformity of Cell Shape', str(values[2]), '1-10'],
-        ['Marginal Adhesion', str(values[3]), '1-10'],
-        ['Single Epithelial Cell Size', str(values[4]), '1-10'],
-        ['Bare Nuclei', str(values[5]), '1-10'],
-        ['Bland Chromatin', str(values[6]), '1-10'],
-        ['Normal Nucleoli', str(values[7]), '1-10'],
-        ['Mitoses', str(values[8]), '1-10'],
-    ]
-    
-    t2 = Table(test_data, colWidths=[2.5*inch, 1.5*inch, 1.5*inch])
-    t2.setStyle(TableStyle([
-        ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#0066cc')),
-        ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
-        ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
-        ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
-        ('FONTSIZE', (0, 0), (-1, 0), 11),
-        ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
-        ('BACKGROUND', (0, 1), (-1, -1), colors.beige),
-        ('GRID', (0, 0), (-1, -1), 1, colors.black),
-        ('FONTNAME', (0, 1), (0, -1), 'Helvetica-Bold'),
-        ('FONTSIZE', (0, 1), (-1, -1), 10),
-    ]))
-    
-    elements.append(t2)
-    elements.append(Spacer(1, 0.4*inch))
-    
-    # Footer note
-    note = Paragraph(
-        "<b>Note:</b> This is a sample report for testing purposes. "
-        "For actual medical reports, please consult with a certified healthcare provider.",
-        styles['Normal']
-    )
-    elements.append(note)
-    
-    # Build PDF
-    doc.build(elements)
-    print(f"✅ Sample report created: {filename}")
-    print(f"📊 Values generated: {values}")
-    return filename
-
-# Create both low and high risk samples
-if __name__ == "__main__":
-    print("Creating sample BRCA reports...")
-    create_sample_brca_report("sample_brca_low_risk.pdf", risk_type="low")
-    create_sample_brca_report("sample_brca_high_risk.pdf", risk_type="high")
-    print("\n✅ Sample reports created successfully!")
-    print("Upload these files to test your application.")
-</artifact>
-
-Now let me create a **simple testing script** to verify your setup:
-
-<antArtifact identifier="test-upload" type="application/vnd.ant.code" language="python" title="Test Upload Script">
-import requests
-import os
-
-# Configuration
-API_URL = "http://127.0.0.1:5001/upload"
-TOKEN = "acbcdefghijklmnopqrstu"
-
-def test_upload(file_path):
-    """Test file upload to the API"""
-    
-    if not os.path.exists(file_path):
-        print(f"❌ File not found: {file_path}")
-        return
-    
-    print(f"\n{'='*60}")
-    print(f"Testing upload: {file_path}")
-    print(f"{'='*60}")
-    
-    headers = {
-        "Authorization": f"Bearer {TOKEN}"
-    }
-    
-    with open(file_path, 'rb') as f:
-        files = {'file': f}
-        
-        try:
-            response = requests.post(API_URL, files=files, headers=headers)
-            
-            print(f"Status Code: {response.status_code}")
-            print(f"Response: {response.json()}")
-            
-            if response.status_code == 200:
-                data = response.json()
-                if data.get('success'):
-                    print(f"\n✅ SUCCESS!")
-                    print(f"Prediction: {data.get('pred')}")
-                    print(f"Risk Score: {data.get('risk_score')}%")
-                else:
-                    print(f"\n❌ FAILED: {data.get('error')}")
-            else:
-                print(f"\n❌ ERROR: {response.text}")
-                
-        except Exception as e:
-            print(f"❌ Request failed: {e}")
-
-if __name__ == "__main__":
-    # Test with sample files
-    print("🧪 Starting upload tests...\n")
-    
-    # First, create sample reports
-    print("Creating sample reports...")
-    os.system("python create_sample_report.py")
-    
-    # Test low risk
-    test_upload("sample_brca_low_risk.pdf")
-    
-    # Test high risk
-    test_upload("sample_brca_high_risk.pdf")
-    
-    print("\n" + "="*60)
-    print("Tests completed!")
-    print("="*60)
-</artifact>
-
-## 📋 Step-by-Step Fix Instructions
-
-1. **Replace your `app.py`** with the improved version above
-
-2. **Install required package for creating test PDFs**:
-```bash
-pip install reportlab
-```
-
-3. **Create the sample report generator**:
-   - Save the "Create Sample BRCA Test Report" code as `create_sample_report.py`
-
-4. **Generate test PDFs**:
-```bash
-python create_sample_report.py
-```
-
-5. **Test your API**:
-   - Start your Flask app: `python app.py`
-   - Upload one of the generated PDFs through your web interface
-
-## 🔍 What Changed?
-
-1. **Better Gemini Prompting**: More specific instructions for extracting exactly 9 values
-2. **Enhanced Error Handling**: Detailed logging at every step
-3. **Fallback Regex Extraction**: If JSON fails, tries regex pattern matching
-4. **Validation**: Ensures exactly 9 features are extracted
-5. **Better Error Messages**: User-friendly messages explaining what went wrong
-
-## 🎯 Expected Behavior
-
-- **Low Risk PDF** → Should return ~20-30% risk score
-- **High Risk PDF** → Should return ~70-90% risk score
-
-Try this and let me know if you still get errors!
+</parameter>
