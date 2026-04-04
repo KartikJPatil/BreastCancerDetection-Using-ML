@@ -1,113 +1,82 @@
-import io
 from flask import Flask, request, jsonify, render_template
 import os
 import pickle
 import numpy as np
 import google.generativeai as genai
-import re
-import json
-import pdfplumber
+import io
+from werkzeug.utils import secure_filename
+from sklearn.preprocessing import StandardScaler
 from flask_cors import CORS
 from dotenv import load_dotenv
+import json
+import re
 
-# ================= ENV =================
 dotenv_path = os.path.join(os.path.dirname(__file__), '.env')
 load_dotenv(dotenv_path)
 
 api_key = os.getenv("GENAI_API_KEY")
-genai.configure(api_key=api_key)
+if not api_key:
+    raise ValueError("❌ API Key not found. Make sure .env is set up correctly.")
 
-# ================= APP =================
+print("🔑 Loaded API Key:", api_key[:5] + "********") 
+
 app = Flask(__name__)
-CORS(app)
+CORS(app)  # Enable CORS for all routes
 
 UPLOAD_FOLDER = 'uploads'
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
-# ================= MODEL =================
+# Load trained SVM model and scaler
 model = pickle.load(open('svm_model.pkl', 'rb'))
 scaler = pickle.load(open('scaler.pkl', 'rb'))
 
+print(f"Model Loaded: {model}")  # Check if the model loaded properly
+print(f"Scaler Loaded: {scaler}")  # Check if the scaler loaded properly
+
+# Configure Gemini API
+genai.configure(api_key=api_key)
+
 SECRET_TOKEN = "acbcdefghijklmnopqrstu"
 
-# ================= PDF EXTRACTION =================
-def extract_with_pdfplumber(file_bytes):
+def process_pdf_with_gemini(file_bytes):
+    """Processes a PDF file with Gemini to extract numerical values under 'OBSERVED VALUE'."""
+    model = genai.GenerativeModel("gemini-1.5-flash")
+
     try:
-        numbers = []
-
-        with pdfplumber.open(io.BytesIO(file_bytes)) as pdf:
-            for page in pdf.pages:
-                text = page.extract_text()
-                if text:
-                    nums = re.findall(r'\d+\.?\d*', text)
-                    numbers.extend(nums)
-
-        numbers = [float(x) for x in numbers]
-
-        if len(numbers) >= 9:
-            return numbers[:9]
-
-        return []
-
-    except Exception as e:
-        print("PDF extraction error:", e)
-        return []
-
-
-# ================= GEMINI (backup only) =================
-def extract_with_gemini(file_bytes):
-    try:
-        model_gemini = genai.GenerativeModel("gemini-1.5-flash")
-
         pdf_data = {
             "mime_type": "application/pdf",
             "data": file_bytes
         }
 
-        response = model_gemini.generate_content([
+        response = model.generate_content([
             pdf_data,
-            "Extract ONLY 9 numbers in JSON: [1,2,3,4,5,6,7,8,9]"
+            "List out only the numerical values under the 'OBSERVED VALUE' column in **valid JSON format**: [num1, num2, num3, ...]"
         ])
 
+        print("🔍 Raw Gemini API Response:", response.text)  # Debugging print
+
         if not response.text:
+            print("❌ No response received from Gemini API")
             return []
 
-        clean = re.sub(r"```json|```", "", response.text)
+        clean_text = re.sub(r"```json\n|\n```", "", response.text.strip())
+        print("📜 Cleaned Gemini Response:", clean_text)  # Debugging print
 
-        match = re.search(r'\[.*?\]', clean)
+        extracted_numbers = json.loads(clean_text)
 
-        if match:
-            data = json.loads(match.group())
-            return [float(x) for x in data]
+        print("✅ Extracted Numbers:", extracted_numbers)  # Debugging print
+        return extracted_numbers
 
+    except json.JSONDecodeError as e:
+        print(f"❌ JSON Parsing Failed: {e}. Falling back to regex extraction.")
         return []
 
-    except:
+    except Exception as e:
+        app.logger.error(f"Error processing PDF with Gemini: {e}")
         return []
-
-
-# ================= MAIN EXTRACTION =================
-def get_features(file_bytes):
-    # 1️⃣ Try pdfplumber first (FAST + RELIABLE)
-    data = extract_with_pdfplumber(file_bytes)
-
-    if len(data) == 9:
-        print("✅ Using pdfplumber")
-        return data
-
-    # 2️⃣ Fallback Gemini
-    data = extract_with_gemini(file_bytes)
-
-    if len(data) == 9:
-        print("✅ Using Gemini")
-        return data
-
-    # 3️⃣ FINAL FALLBACK (for demo safety)
-    print("⚠ Using fallback values")
-    return [5,5,5,5,5,5,5,5,5]
-
-
-# ================= ROUTES =================
+    
+    
 @app.route('/')
 def index():
     return render_template('index.html')
@@ -116,56 +85,66 @@ def index():
 @app.route('/upload', methods=['POST'])
 def upload_file():
     try:
+        # Authorization check
         token = request.headers.get('Authorization')
         if token != f"Bearer {SECRET_TOKEN}":
+            print("❌ Unauthorized access attempt")
             return jsonify({'error': 'Unauthorized'}), 403
 
-        if 'file' not in request.files:
-            return jsonify({'error': 'No file uploaded'}), 400
+        int_features = []
 
-        file = request.files['file']
-        file_bytes = file.read()
+        # File upload handling
+        if 'file' in request.files and request.files['file'].filename:
+            file = request.files['file']
+            file_bytes = file.read()
 
-        int_features = get_features(file_bytes)
+            # Process PDF using Gemini
+            int_features = process_pdf_with_gemini(file_bytes)
 
-        final = np.array(int_features, dtype=float).reshape(1, -1)
+        print("🔢 Extracted Features:", int_features)  # Debugging print
+
+        
+
+        # Convert to NumPy array and preprocess
+        final = np.array(int_features).reshape(1, -1)
+        print("📊 Input Array Shape:", final.shape)  # Debugging print
 
         final_scaled = scaler.transform(final)
 
-        probability = model.predict_proba(final_scaled)[:, 1] * 100
-        output = 1 if probability[0] >= 50 else 0
-        risk_score = round(probability[0], 2)
+        # Predict using SVM model
+        probability = model.predict_proba(final_scaled)[:, 1] * 100  # Get probability as a percentage
+        output = 1 if probability[0] >= 50 else 0  # Threshold at 50%
+        risk_score = round(probability[0], 2)  # Round to 2 decimal places
 
+        print(risk_score)
         return jsonify({
-            "success": True,
-            "pred": "⚠ High Risk: Malignant Detected" if output == 1 else "✅ Low Risk: No Cancer Detected",
-            "risk_score": risk_score,
-            "output": output
-        })
+        "success": True,
+        "pred": "⚠ High Risk: Malignant Detected" if output == 1 else "✅ Low Risk: No Cancer Detected",
+        "risk_score": risk_score,
+        "output": output
+    })
+        
 
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
+        print(f"❌ Error: {e}")
+        return jsonify({'error': str(e)})
 
 
 @app.route('/upload_report', methods=['POST'])
 def upload_report():
     return upload_file()
 
-
 @app.route('/blog')
 def blog():
     return render_template('blogs.html')
-
 
 @app.route('/self-examination')
 def self_examination():
     return render_template('self_exam.html')
 
-
 @app.route('/ai_detection')
 def ai_detection():
     return render_template('ai_detection.html')
 
-
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=10000)
+    app.run(host='127.0.0.1', port=5001, debug=True)
